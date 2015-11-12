@@ -70,10 +70,12 @@ public class BeerTrackerController {
     }//End of home
 
     @RequestMapping("/add-beer")
-    public String addBeer(String beername, String beertype, Integer beercalories, HttpServletRequest request){
+    public String addBeer(String beername, String beertype, int beercalories, HttpServletRequest session) throws Exception {
         //create and use session to help join values from different tables
-        HttpSession session = request.getSession();
         String username = (String) session.getAttribute("username");
+        if(username == null){
+            throw new Exception("You are not logged in here");
+        }
         User user = users.findOneByName(username);
         Beer tempBeer = new Beer();
         tempBeer.name = beername;
@@ -86,7 +88,10 @@ public class BeerTrackerController {
     }//End of add-beer
 
     @RequestMapping("/edit-beer")
-    public String editBeer(Integer id, String name, String type){
+    public String editBeer(int id, String name, String type, HttpSession session) throws Exception {
+        if(session.getAttribute(name) == null){
+            throw new Exception("Not Logged In");
+        }
         Beer beer = beers.findOne(id);
         beer.name = name;
         beer.type = type;
