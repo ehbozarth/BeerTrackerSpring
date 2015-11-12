@@ -18,6 +18,8 @@ public class User {
     Integer id;
 
     String name;
+    String password;
+    //Going to store the hash password
 
 
     @OneToMany(mappedBy = "user")//This is the name of the field in the Beer Class

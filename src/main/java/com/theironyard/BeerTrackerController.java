@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 /**
  * Created by earlbozarth on 11/10/15.
@@ -24,11 +26,12 @@ public class BeerTrackerController {
 
     //Creates default User and user name once SPRING has sprung
     @PostConstruct
-    public void init(){
+    public void init() throws InvalidKeySpecException, NoSuchAlgorithmException {
         User user = users.findOneByName("Default name");
         if(user == null){
             user = new User();
             user.name = "Default Name";
+            user.password = PasswordHash.createHash("hunter2");
             users.save(user);
         }
     }
@@ -92,7 +95,7 @@ public class BeerTrackerController {
     }
 
     @RequestMapping("/login")
-    public String login(HttpServletRequest request, String username){
+    public String login(HttpServletRequest request, String username, String password) throws Exception {
         HttpSession session = request.getSession();
         session.setAttribute("username", username);
 
@@ -100,7 +103,11 @@ public class BeerTrackerController {
         if(user == null){
             user = new User();
             user.name = username;
+            user.password = PasswordHash.createHash(password); //hashing the password
             users.save(user);
+        }
+        else if(!PasswordHash.validatePassword(password, user.password)){ //user input password checked against the database password
+            throw new Exception("Wrong password");
         }
 
         return "redirect:/";
