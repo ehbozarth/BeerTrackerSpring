@@ -75,7 +75,7 @@ public class BeerTrackerController {
     }//End of home
 
     @RequestMapping("/add-beer")
-    public String addBeer(String beername, String beertype, int beercalories, HttpServletRequest session) throws Exception {
+    public String addBeer(String beername, String beertype, int beercalories, HttpSession session) throws Exception {
         //create and use session to help join values from different tables
         String username = (String) session.getAttribute("username");
         if(username == null){
